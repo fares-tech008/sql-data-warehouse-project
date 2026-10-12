@@ -1,101 +1,100 @@
+# SQL Data Warehouse (SQL Server, Medallion Architecture)
 
-# Data Warehouse and Analytics Project
+A guided learning project: a small data warehouse built in **SQL Server** with Bronze, Silver and Gold layers. It combines sales data from two source systems (CRM and ERP, both CSV files) into a star schema.
 
-Welcome to the **Data Warehouse and Analytics Project** repository! 🚀  
-This project demonstrates a comprehensive data warehousing and analytics solution, from building a data warehouse to generating actionable insights. Designed as a portfolio project, it highlights industry best practices in data engineering and analytics.
+> **Credits:** I built this by following the free tutorial by **Data With Baraa** (Baraa Khatib Salkini), which is MIT licensed. The project idea, the dataset and the overall design come from that tutorial. I typed and ran the SQL myself, and I redrew the architecture diagram. The original copyright notice is kept in [LICENSE](LICENSE).
 
 ---
-## 🏗️ Data Architecture
 
-The data architecture for this project follows Medallion Architecture **Bronze**, **Silver**, and **Gold** layers:
+## Architecture
+
 ![Data Architecture](docs/data_architecture.png)
 
-1. **Bronze Layer**: Stores raw data as-is from the source systems. Data is ingested from CSV Files into SQL Server Database.
-2. **Silver Layer**: This layer includes data cleansing, standardization, and normalization processes to prepare data for analysis.
-3. **Gold Layer**: Houses business-ready data modeled into a star schema required for reporting and analytics.
+| Layer | What it does |
+|-------|--------------|
+| **Bronze** | Raw CSV data loaded as-is into SQL Server tables (`BULK INSERT`). |
+| **Silver** | Cleaned data: trimmed text, standardised values, fixed dates, duplicates removed. |
+| **Gold** | Business-ready **views** in a star schema: `dim_customers`, `dim_products`, `fact_sales`. |
 
----
-## 📖 Project Overview
+## What is in this repository
 
-This project involves:
-
-1. **Data Architecture**: Designing a Modern Data Warehouse Using Medallion Architecture **Bronze**, **Silver**, and **Gold** layers.
-2. **ETL Pipelines**: Extracting, transforming, and loading data from source systems into the warehouse.
-3. **Data Modeling**: Developing fact and dimension tables optimized for analytical queries.
-4. **Analytics & Reporting**: Creating SQL-based reports and dashboards for actionable insights.
-
-🎯 This repository is an excellent resource for professionals and students looking to showcase expertise in:
-- SQL Development
-- Data Architect
-- Data Engineering  
-- ETL Pipeline Developer  
-- Data Modeling  
-- Data Analytics  
-
----
-
-## 🚀 Project Requirements
-
-### Building the Data Warehouse (Data Engineering)
-
-#### Objective
-Develop a modern data warehouse using SQL Server to consolidate sales data, enabling analytical reporting and informed decision-making.
-
-#### Specifications
-- **Data Sources**: Import data from two source systems (ERP and CRM) provided as CSV files.
-- **Data Quality**: Cleanse and resolve data quality issues prior to analysis.
-- **Integration**: Combine both sources into a single, user-friendly data model designed for analytical queries.
-- **Scope**: Focus on the latest dataset only; historization of data is not required.
-- **Documentation**: Provide clear documentation of the data model to support both business stakeholders and analytics teams.
-
----
-
-### BI: Analytics & Reporting (Data Analysis)
-
-#### Objective
-Develop SQL-based analytics to deliver detailed insights into:
-- **Customer Behavior**
-- **Product Performance**
-- **Sales Trends**
-
-These insights empower stakeholders with key business metrics, enabling strategic decision-making.  
-
-For more details, refer to [docs/requirements.md](docs/requirements.md).
-
-## 📂 Repository Structure
 ```
-data-warehouse-project/
-│
-├── datasets/                           # Raw datasets used for the project (ERP and CRM data)
-│
-├── docs/                               # Project documentation and architecture details
-│   ├── etl.drawio                      # Draw.io file shows all different techniquies and methods of ETL
-│   ├── data_architecture.drawio        # Draw.io file shows the project's architecture
-│   ├── data_catalog.md                 # Catalog of datasets, including field descriptions and metadata
-│   ├── data_flow.drawio                # Draw.io file for the data flow diagram
-│   ├── data_models.drawio              # Draw.io file for data models (star schema)
-│   ├── naming-conventions.md           # Consistent naming guidelines for tables, columns, and files
-│
-├── scripts/                            # SQL scripts for ETL and transformations
-│   ├── bronze/                         # Scripts for extracting and loading raw data
-│   ├── silver/                         # Scripts for cleaning and transforming data
-│   ├── gold/                           # Scripts for creating analytical models
-│
-├── tests/                              # Test scripts and quality files
-│
-├── README.md                           # Project overview and instructions
-├── LICENSE                             # License information for the repository
-├── .gitignore                          # Files and directories to be ignored by Git
-└── requirements.txt                    # Dependencies and requirements for the project
+sql-data-warehouse-project/
+├── datasets/        # Placeholder only. The CSV files are NOT included (see "How to run")
+├── docs/
+│   ├── data_architecture.png   # Architecture diagram
+│   ├── data_flow.png           # Data flow diagram
+│   ├── data_integration.png    # How the source tables relate
+│   ├── data_model.png          # Star schema
+│   ├── data_catalog.md         # Description of the Gold tables and columns
+│   └── naming_conventions.md   # Naming rules used in the SQL
+├── scripts/
+│   ├── init_database.sql       # Creates the DataWarehouse database and the 3 schemas
+│   ├── bronze/                 # ddl_bronze.sql (tables) + proc_load_bronze.sql (load procedure)
+│   ├── Silver/                 # ddl_silver.sql (tables) + proc_load_silver.sql (load procedure)
+│   └── gold/ddl_gold.sql       # Creates the 3 Gold views
+├── tests/
+│   ├── quality_checks_silver.sql   # Data quality checks on Silver
+│   └── quality_checks_gold.sql     # Data quality checks on Gold
+├── LICENSE
+└── README.md
 ```
----
 
+## How to run
 
-## 🛡️ License
+You need **SQL Server** and **SQL Server Management Studio (SSMS)** (both free: Developer/Express edition).
 
-This project is licensed under the [MIT License](LICENSE). You are free to use, modify, and share this project with proper attribution.
+**1. Get the data.** The CSV files are not in this repo. Download the source files (`source_crm` and `source_erp` folders) from the original tutorial by Data With Baraa and place them in a folder on your computer.
 
-## 🌟 About Me
+**2. Fix the file paths.** In `scripts/bronze/proc_load_bronze.sql` every `BULK INSERT` uses a path like `C:\sql\dwh_project\datasets\source_crm\cust_info.csv`. Change `C:\sql\dwh_project\datasets` to the folder where you saved the data (6 places).
 
-Hi there! I'm **Fares Bittar**, I’m a third year Computer Scinece major want to share my knowledge in Data Engineering.
+**3. Run the scripts in this order in SSMS:**
 
+1. `scripts/init_database.sql`
+2. `scripts/bronze/ddl_bronze.sql`
+3. `scripts/bronze/proc_load_bronze.sql`
+4. `scripts/Silver/ddl_silver.sql`
+5. `scripts/Silver/proc_load_silver.sql`
+6. `scripts/gold/ddl_gold.sql`
+
+**4. Load the data:**
+
+```sql
+EXEC bronze.load_bronze;
+EXEC silver.load_silver;
+```
+
+**5. Check the result:**
+
+```sql
+SELECT TOP 10 * FROM gold.fact_sales;
+```
+
+You can also run the files in `tests/` to see the quality checks.
+
+> `init_database.sql` drops and recreates the `DataWarehouse` database. Do not run it on a server that has a database with that name you want to keep.
+
+## What I learned
+
+- Building a Bronze / Silver / Gold warehouse in plain SQL
+- Cleaning data with SQL (duplicates, NULLs, inconsistent text, bad dates)
+- Stored procedures and `BULK INSERT`
+- Joining two source systems into a star schema (one fact table, two dimensions)
+- Writing simple data quality checks
+
+## Limitations (honest notes)
+
+- Guided tutorial project, not an original design.
+- The load is a full refresh every time (truncate and reload), not incremental.
+- No automated tests or scheduling; the quality checks are SQL scripts run by hand.
+- No dashboards or reports are included.
+
+For a project that I designed and debugged myself, see my [airline-operations-lakehouse](https://github.com/fares-tech008/airline-operations-lakehouse) (Databricks, PySpark, Delta Lake, automated tests).
+
+## License
+
+MIT License. See [LICENSE](LICENSE). Original work © 2024 Baraa Khatib Salkini; modifications © 2026 Fares Bittar.
+
+## About me
+
+I'm **Fares Bittar**, an informatics student teaching myself data engineering (SQL, Python, Spark). This repository is one of my learning projects.
