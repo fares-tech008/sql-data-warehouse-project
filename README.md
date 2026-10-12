@@ -33,6 +33,7 @@ sql-data-warehouse-project/
 │   ├── bronze/                 # ddl_bronze.sql (tables) + proc_load_bronze.sql (load procedure)
 │   ├── Silver/                 # ddl_silver.sql (tables) + proc_load_silver.sql (load procedure)
 │   └── gold/ddl_gold.sql       # Creates the 3 Gold views
+├── analysis/                   # My own SQL queries on the Gold views (sales, customers, products)
 ├── tests/
 │   ├── quality_checks_silver.sql   # Data quality checks on Silver
 │   └── quality_checks_gold.sql     # Data quality checks on Gold
@@ -81,6 +82,7 @@ You can also run the files in `tests/` to see the quality checks.
 - Stored procedures and `BULK INSERT`
 - Joining two source systems into a star schema (one fact table, two dimensions)
 - Writing simple data quality checks
+- Writing analysis queries with window functions (running total, RANK) on a star schema
 
 ## Limitations (honest notes)
 
